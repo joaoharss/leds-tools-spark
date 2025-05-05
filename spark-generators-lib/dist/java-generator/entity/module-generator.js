@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs";
-import { isEnumX, isLocalEntity, isModule, isModuleImport } from "../../shared/ast.js";
-import { createPath } from "../../shared/generator-utils.js";
-import { processRelations } from "../../shared/relations.js";
+import { isEnumX, isLocalEntity, isModule, isModuleImport } from "../shared/ast.js";
+import { createPath } from "../shared/generator-utils.js";
+import { processRelations } from "../shared/relations.js";
 import { expandToStringWithNL, toString } from "langium/generate";
 import { generateModel } from "./model-generator.js";
 import { generateEnum } from "./enum-generator.js";

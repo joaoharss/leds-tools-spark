@@ -1,5 +1,5 @@
 import { AstNode } from "langium";
-import { Entity } from "../shared/ast.js";
+import { Entity } from "./ast.js";
 /**
  * Capitaliza uma string
  *

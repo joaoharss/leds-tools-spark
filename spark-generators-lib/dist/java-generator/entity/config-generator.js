@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { isModuleImport } from '../../shared/ast.js';
-import { createPath } from '../../shared/generator-utils.js';
+import { isModuleImport } from '../shared/ast.js';
+import { createPath } from '../shared/generator-utils.js';
 import { expandToStringWithNL, toString } from 'langium/generate';
 export function generateConfigs(model, target_folder) {
     if (model.configuration) {

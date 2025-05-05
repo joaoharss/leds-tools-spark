@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { isLocalEntity, isModule } from "../../shared/ast.js";
-import { capitalizeString, createPath } from "../../shared/generator-utils.js";
+import { isLocalEntity, isModule } from "../shared/ast.js";
+import { capitalizeString, createPath } from "../shared/generator-utils.js";
 import { expandToString, expandToStringWithNL, toString } from "langium/generate";
 export function generateModules(model, target_folder) {
     const package_path = model.configuration?.package_path ?? 'base';

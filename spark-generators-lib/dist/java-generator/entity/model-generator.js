@@ -1,6 +1,6 @@
 import { CompositeGeneratorNode, expandToString, expandToStringWithNL, toString } from "langium/generate";
-import { isLocalEntity } from "../../shared/ast.js";
-import { capitalizeString } from "../../shared/generator-utils.js";
+import { isLocalEntity } from "../shared/ast.js";
+import { capitalizeString } from "../shared/generator-utils.js";
 export function generateModel(cls, is_supertype, relations, package_name, importedEntities) {
     const supertype = cls.superType?.ref;
     const is_abstract = cls?.is_abstract;

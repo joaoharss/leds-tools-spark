@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
-import { createPath } from '../../shared/generator-utils.js';
+import { createPath } from '../shared/generator-utils.js';
 import { expandToStringWithNL, toString } from 'langium/generate';
-import { isModuleImport } from '../../shared/ast.js';
+import { isModuleImport } from '../shared/ast.js';
 export function generateConfigs(model, target_folder) {
     if (model.configuration) {
         fs.writeFileSync(path.join(target_folder, 'Dockerfile'), toString(generateDockerFile()));

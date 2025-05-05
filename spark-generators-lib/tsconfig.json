@@ -15,6 +15,12 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "rootDir": "packages"
+    "rootDir": "packages",
+    "baseUrl": "./",
+    "paths": {
+      "spark-generators-lib/springboot": [
+        "node_modules/spark-generators-lib/dist/java-generator/index.js"
+      ]
+    }
   }
 }

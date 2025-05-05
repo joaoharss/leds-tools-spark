@@ -1,6 +1,6 @@
 import path from "path";
 import fs from 'fs';
-import { isModel } from "../shared/ast.js";
+import { isModel } from "./ast.js";
 /**
  * Capitaliza uma string
  *

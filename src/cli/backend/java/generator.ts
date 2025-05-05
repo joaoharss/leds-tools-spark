@@ -1,8 +1,7 @@
-import { Model } from "../../../language/generated/ast.js"
 import fs from "fs";
 
-import { generate as springbootGenerate } from "./springboot/generator.js";
-
+import { java, generators } from "spark-generators-lib";
+type Model = java.Model;
 
 export function generate(model: Model, target_folder: string) : void {
     const target_folder_back = target_folder+"/backend"
@@ -10,6 +9,6 @@ export function generate(model: Model, target_folder: string) : void {
     //creating folders
     fs.mkdirSync(target_folder_back, {recursive:true})
     
-    springbootGenerate(model, target_folder_back)
+    generators.springboot.generate(model, target_folder_back)
     
 }  

@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
-import { createPath } from '../../shared/generator-utils.js'
-import { LocalEntity, Model, isLocalEntity, isModule } from '../../shared/ast.js'
+import { createPath } from '../shared/generator-utils.js'
+import { LocalEntity, Model, isLocalEntity, isModule } from '../shared/ast.js'
 import { Generated, expandToStringWithNL, toString } from 'langium/generate'
 //Relation
 

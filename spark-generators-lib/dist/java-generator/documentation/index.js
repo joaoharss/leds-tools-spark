@@ -1,1 +1,1 @@
-export * from "./generators.js";
+export { generate as generateDocumentation } from './generators.js';
