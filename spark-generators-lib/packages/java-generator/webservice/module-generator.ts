@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { Attribute, Configuration, LocalEntity, Model, isLocalEntity, isModule } from "../shared/ast.js";
-import { capitalizeString, createPath } from "../shared/generator-utils.js";
+import { Attribute, Configuration, LocalEntity, Model, isLocalEntity, isModule } from "../../shared/ast.js";
+import { capitalizeString, createPath } from "../../shared/generator-utils.js";
 import { Generated, expandToString, expandToStringWithNL, toString } from "langium/generate";
 
 

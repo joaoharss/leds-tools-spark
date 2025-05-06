@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { isLocalEntity, isModule } from '../shared/ast.js';
-import { createPath } from '../shared/generator-utils.js';
+import { isLocalEntity, isModule } from '../../shared/ast.js';
+import { createPath } from '../../shared/generator-utils.js';
 import { expandToStringWithNL, toString } from 'langium/generate';
 export function generateDebezium(model, target_folder) {
     if (model.configuration) {
