@@ -1,4 +1,2 @@
-import { java } from "spark-generators-lib";
-type Model = java.Model;
-export declare function generate(model: Model, target_folder: string): void;
-export {};
+import { Model } from "spark-generators-lib";
+export declare function generate(model: Model.Model, target_folder: string): void;

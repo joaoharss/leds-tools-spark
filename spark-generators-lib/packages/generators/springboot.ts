@@ -1,10 +1,8 @@
 import fs from "fs";
 
-import { java } from "spark-generators-lib";
+import { java, Model } from "spark-generators-lib";
 
-type Model = java.Model;
-
-export function generate(model: Model, target_folder: string) : void {
+export function generate(model: Model.Model, target_folder: string) : void {
     const target_folder_entity = target_folder+"/entity"
     const target_folder_webservice = target_folder+"/webservice"
 
