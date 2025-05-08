@@ -1,1 +1,1 @@
-export { Model } from "./ast.js";
+export { Model, Configuration } from "./ast.js";
