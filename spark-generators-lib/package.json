@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "langium": "^3.5.0",
-    "spark-generators-lib": "^1.0.7"
+    "spark-generators-lib": "^1.0.11"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
@@ -24,7 +24,7 @@
     "typescript": "^5.8.3",
     "vitest": "^2.1.8"
   },
-  "version": "1.0.7",
+  "version": "1.0.11",
   "keywords": [],
   "author": "",
   "license": "ISC"
