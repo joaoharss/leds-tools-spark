@@ -11,7 +11,7 @@
     "publisher": "ledsifes",
     "repository": {
         "type": "git",
-        "url": "https://gitlab.com/ledsifes/tools/r2d2"
+        "url": "git+https://gitlab.com/ledsifes/tools/r2d2.git"
     },
     "type": "module",
     "scripts": {
@@ -187,7 +187,7 @@
     ],
     "main": "./out/extension/main.cjs",
     "bin": {
-        "s-p-a-r-k-cli": "./bin/cli.js"
+        "s-p-a-r-k-cli": "bin/cli.js"
     },
     "overrides": {
         "monaco-editor": "$monaco-editor",

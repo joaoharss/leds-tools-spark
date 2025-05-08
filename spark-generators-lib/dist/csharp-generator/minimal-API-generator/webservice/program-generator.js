@@ -1,8 +1,14 @@
 import path from "path";
 import fs from "fs";
+<<<<<<< HEAD
 import { isLocalEntity, isModule, } from "../../../../../language/generated/ast.js";
 import { expandToStringWithNL } from "langium/generate";
 import { capitalizeString } from "../../../../shared/generator-utils.js";
+=======
+import { isLocalEntity, isModule, } from "../../../shared/ast.js";
+import { expandToStringWithNL } from "langium/generate";
+import { capitalizeString } from "../../../shared/generator-utils.js";
+>>>>>>> 892cbef938aba9689a65f8114b388163385edf0e
 export function generate(model, target_folder) {
     7;
     console.log(model.configuration?.feature);

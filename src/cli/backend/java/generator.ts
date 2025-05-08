@@ -1,8 +1,8 @@
 import fs from "fs";
 
-import { generators, Model } from "spark-generators-lib";
+import { generators, Model as LibModel} from "spark-generators-lib";
 
-export function generate(model: Model.Model, target_folder: string) : void {
+export function generate(model: LibModel.Model, target_folder: string) : void {
     const target_folder_back = target_folder+"/backend"
 
     //creating folders

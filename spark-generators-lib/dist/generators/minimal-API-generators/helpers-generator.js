@@ -1,8 +1,14 @@
 import fs from "fs";
 import path from "path";
+<<<<<<< HEAD
 import { generate as generateProperties } from "./properties/generator.js";
 import { expandToStringWithNL } from "langium/generate";
 import { capitalizeString } from "../../../util/generator-utils.js";
+=======
+import { generate as generateProperties } from "../../csharp-generator/minimal-API-generator/properties/generator.js";
+import { expandToStringWithNL } from "langium/generate";
+import { capitalizeString } from "../../shared/generator-utils.js";
+>>>>>>> 892cbef938aba9689a65f8114b388163385edf0e
 export function generate(model, target_folder) {
     const target_folder_properties = target_folder + "/Properties";
     fs.mkdirSync(target_folder_properties, { recursive: true });
