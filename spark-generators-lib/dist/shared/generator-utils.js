@@ -1,24 +1,13 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.base_ident = exports.ident_size = void 0;
-exports.capitalizeString = capitalizeString;
-exports.createPath = createPath;
-exports.topologicalSort = topologicalSort;
-exports.cycleFinder = cycleFinder;
-exports.getQualifiedName = getQualifiedName;
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
-const ast_js_1 = require("./ast.js");
+import path from "path";
+import fs from 'fs';
+import { isModel } from "./ast.js";
 /**
  * Capitaliza uma string
  *
  * @param str - String a ser capitalizada
  * @returns A string capitalizada
  */
-function capitalizeString(str) {
+export function capitalizeString(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 /**
@@ -27,12 +16,12 @@ function capitalizeString(str) {
  * @param args - Caminho para ser construído
  * @returns O caminho construído e normalizado, o mesmo retorno que `path.join(args)`
  */
-exports.ident_size = 4;
-exports.base_ident = ' '.repeat(exports.ident_size);
-function createPath(...args) {
-    const PATH = path_1.default.join(...args);
-    if (!fs_1.default.existsSync(PATH)) {
-        fs_1.default.mkdirSync(PATH, { recursive: true });
+export const ident_size = 4;
+export const base_ident = ' '.repeat(ident_size);
+export function createPath(...args) {
+    const PATH = path.join(...args);
+    if (!fs.existsSync(PATH)) {
+        fs.mkdirSync(PATH, { recursive: true });
     }
     return PATH;
 }
@@ -50,7 +39,7 @@ function createPath(...args) {
  *
  * @throws {Error} Se houver um ciclo em `nodes`, tornando a ordenação impossível
  */
-function topologicalSort(nodes, fn, reverse) {
+export function topologicalSort(nodes, fn, reverse) {
     const permantent_marked = new Set();
     const temporary_marked = new Set();
     const ordering = [];
@@ -85,7 +74,7 @@ function topologicalSort(nodes, fn, reverse) {
 * Sempre que um nó não houver sucessor, não existe ciclo envolvendo esse nó
 * @returns Um booleano, dizendo se foi encontrado ciclo
 */
-function cycleFinder(start_node, sucessor_function) {
+export function cycleFinder(start_node, sucessor_function) {
     let hare = start_node;
     let turtle = start_node;
     while (hare !== undefined && turtle !== undefined) {
@@ -104,10 +93,10 @@ function cycleFinder(start_node, sucessor_function) {
 /**
 * Dado um Entity que tenha nome, retorna o qualified name completo
 */
-function getQualifiedName(e) {
+export function getQualifiedName(e) {
     let qualified_name = e.name;
     let parent = e.$container;
-    while (!(0, ast_js_1.isModel)(parent)) {
+    while (!isModel(parent)) {
         qualified_name = `${parent.name}.${qualified_name}`;
         parent = parent.$container;
     }

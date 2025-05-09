@@ -1,2 +1,1 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+export { generate as generator } from '../minimal-API-generators/generator.js';

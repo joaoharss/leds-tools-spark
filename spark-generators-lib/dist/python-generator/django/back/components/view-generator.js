@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateAPIView = generateAPIView;
-const ast_js_1 = require("../../../../shared/ast.js");
-const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
-const ident = generator_utils_js_1.base_ident;
+import { isLocalEntity } from "../../../../shared/ast.js";
+import { base_ident } from "../../../../shared/generator-utils.js";
+const ident = base_ident;
 function generateSearchFields(e) {
     return e.attributes.filter(a => a.type != "file").map(a => `'${a.name}'`).join(', ');
 }
@@ -45,8 +42,8 @@ function createEntityViewSet(e, has_actor) {
     ];
     return lines.join('\n');
 }
-function generateAPIView(m, entities_with_actor) {
-    const entities = m.elements.filter(ast_js_1.isLocalEntity).filter(e => !e.is_abstract);
+export function generateAPIView(m, entities_with_actor) {
+    const entities = m.elements.filter(isLocalEntity).filter(e => !e.is_abstract);
     const lines = [
         `from .models import (`,
         ...entities.map(e => `${ident}${e.name},`),

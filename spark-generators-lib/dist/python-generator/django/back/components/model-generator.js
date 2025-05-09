@@ -1,17 +1,14 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateModels = generateModels;
-const ast_js_1 = require("../../../../shared/ast.js");
-const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
-const ident = generator_utils_js_1.base_ident;
-function generateModels(m) {
+import { isEnumX, isImportedEntity, isLocalEntity, isManyToMany, isModule, isModuleImport } from "../../../../shared/ast.js";
+import { base_ident, capitalizeString, topologicalSort } from "../../../../shared/generator-utils.js";
+const ident = base_ident;
+export function generateModels(m) {
     const get_entities_prereqs = (e) => {
-        if (e.superType?.ref?.$container === e.$container && (0, ast_js_1.isLocalEntity)(e.superType.ref)) {
+        if (e.superType?.ref?.$container === e.$container && isLocalEntity(e.superType.ref)) {
             return [e.superType.ref];
         }
         return [];
     };
-    const sorted_entities = (0, generator_utils_js_1.topologicalSort)(m.elements.filter(ast_js_1.isLocalEntity), get_entities_prereqs);
+    const sorted_entities = topologicalSort(m.elements.filter(isLocalEntity), get_entities_prereqs);
     const imports = Array.from(generateImports(m), ([key, value]) => `from ${key} import ${Array.from(value).join(', ')}`);
     const already_done_entities = new Set();
     const lines = [
@@ -19,7 +16,7 @@ function generateModels(m) {
         `from django.utils.translation import gettext_lazy as _`,
         ...imports,
         ``,
-        ...m.elements.filter(ast_js_1.isEnumX).map(generateEnum),
+        ...m.elements.filter(isEnumX).map(generateEnum),
         ``,
         ...sorted_entities.map(e => generateModel(e, already_done_entities)),
         ``
@@ -31,7 +28,7 @@ function generateModels(m) {
  */
 function generateImports(m) {
     const imports = new Map();
-    const entities = m.elements.filter(ast_js_1.isLocalEntity);
+    const entities = m.elements.filter(isLocalEntity);
     if (entities.length === 0) {
         return imports;
     }
@@ -51,7 +48,7 @@ function generateImports(m) {
         const supertype_origin = supertype?.$container;
         if (supertype_origin) {
             // Se o supertype vem de um ModuleImport
-            if ((0, ast_js_1.isModuleImport)(supertype_origin)) {
+            if (isModuleImport(supertype_origin)) {
                 add_import(`${supertype_origin.name}.models`, `${supertype.name}`);
             }
             // Se o supertype vem de um módulo local diferente
@@ -62,10 +59,10 @@ function generateImports(m) {
         // Adiciona nos imports todas as entidades de outros módulos que são referênciadas em relações
         for (const r of e.relations) {
             const entity_origin = r.type.ref?.$container;
-            if ((0, ast_js_1.isModuleImport)(entity_origin)) {
+            if (isModuleImport(entity_origin)) {
                 add_import(`${entity_origin.name}.models`, `${r.type.ref?.name}`);
             }
-            if ((0, ast_js_1.isModule)(entity_origin) && (entity_origin !== m)) {
+            if (isModule(entity_origin) && (entity_origin !== m)) {
                 add_import(`apps.${entity_origin.name.toLowerCase()}.models`, `${r.type.ref?.name}`);
             }
         }
@@ -95,7 +92,7 @@ function generateEnum(e) {
         `${ident}"""${e.comment ?? ''}"""`,
         ...e.attributes.map(a => {
             const str = split_on_camelcase(a.name).toLowerCase();
-            return `${ident}${str.toUpperCase()} = '${str.toUpperCase()}', _('${a.fullName ?? (0, generator_utils_js_1.capitalizeString)(str.replaceAll('_', ' '))}')`;
+            return `${ident}${str.toUpperCase()} = '${str.toUpperCase()}', _('${a.fullName ?? capitalizeString(str.replaceAll('_', ' '))}')`;
         }),
         ``
     ];
@@ -160,7 +157,7 @@ function generateAttribute(a) {
         case 'uuid':
             return `${a.name} = models.${a.type.toUpperCase()}Field(${fullname}blank=True)`;
         default:
-            return `${a.name} = models.${(0, generator_utils_js_1.capitalizeString)(a.type)}Field(${fullname}null=True, blank=True)`;
+            return `${a.name} = models.${capitalizeString(a.type)}Field(${fullname}null=True, blank=True)`;
     }
 }
 function createRelation(r, set) {
@@ -171,7 +168,7 @@ function createRelation(r, set) {
         tgt_name = "self";
     }
     // Relação com uma entidade externa/importada
-    else if ((0, ast_js_1.isImportedEntity)(tgt_entity)) {
+    else if (isImportedEntity(tgt_entity)) {
         tgt_name = tgt_entity.name;
     }
     // Relação com uma entidade de outro módulo
@@ -179,14 +176,14 @@ function createRelation(r, set) {
         tgt_name = `'apps_${tgt_entity?.$container.name.toLowerCase()}.${tgt_entity?.name}'`;
     }
     // Relação interna ao módulo, com uma entidade já declarada
-    else if ((0, ast_js_1.isLocalEntity)(tgt_entity) && set.has(tgt_entity)) {
+    else if (isLocalEntity(tgt_entity) && set.has(tgt_entity)) {
         tgt_name = tgt_entity.name;
     }
     // Relação interna ao módulo, com uma entidade ainda não declarada
     else {
         tgt_name = `'${tgt_entity.name}'`;
     }
-    if ((0, ast_js_1.isManyToMany)(r)) {
+    if (isManyToMany(r)) {
         const through = r.by?.ref ?
             `, through=${r.by.ref.name}` :
             "";

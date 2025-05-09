@@ -1,28 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const generator_js_1 = require("../../csharp-generator/minimal-API-generator/properties/generator.js");
-const generate_1 = require("langium/generate");
-const generator_utils_js_1 = require("../../shared/generator-utils.js");
-function generate(model, target_folder) {
+import fs from "fs";
+import path from "path";
+import { generate as generateProperties } from "../../csharp-generator/minimal-API-generator/properties/generator.js";
+import { expandToStringWithNL } from "langium/generate";
+import { capitalizeString } from "../../shared/generator-utils.js";
+export function generate(model, target_folder) {
     const target_folder_properties = target_folder + "/Properties";
-    fs_1.default.mkdirSync(target_folder_properties, { recursive: true });
-    (0, generator_js_1.generate)(model, target_folder_properties);
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'appsettings.json'), generateAppSettings(model));
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'appsettings.Development.json'), generateAppSettingsDevelopment());
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, model.configuration?.name + '.csproj'), generatecsproj());
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, model.configuration?.name + '.csproj.user'), generatecsprojuser());
+    fs.mkdirSync(target_folder_properties, { recursive: true });
+    generateProperties(model, target_folder_properties);
+    fs.writeFileSync(path.join(target_folder, 'appsettings.json'), generateAppSettings(model));
+    fs.writeFileSync(path.join(target_folder, 'appsettings.Development.json'), generateAppSettingsDevelopment());
+    fs.writeFileSync(path.join(target_folder, model.configuration?.name + '.csproj'), generatecsproj());
+    fs.writeFileSync(path.join(target_folder, model.configuration?.name + '.csproj.user'), generatecsprojuser());
 }
 function generateAppSettings(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 {
   "ConnectionStrings": {
-    "${(0, generator_utils_js_1.capitalizeString)(model.configuration?.name || "model")}Connection": "Server=sqlserver,1433;Database=${model.configuration?.database_name || "DefaultDB"};User Id=sa;Password=Senha@123;Trusted_Connection=False;TrustServerCertificate=True;"
+    "${capitalizeString(model.configuration?.name || "model")}Connection": "Server=sqlserver,1433;Database=${model.configuration?.database_name || "DefaultDB"};User Id=sa;Password=Senha@123;Trusted_Connection=False;TrustServerCertificate=True;"
   },
   "Logging": {
     "LogLevel": {
@@ -36,7 +30,7 @@ function generateAppSettings(model) {
 `;
 }
 function generateAppSettingsDevelopment() {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
     {
         "Logging": {
           "LogLevel": {
@@ -48,7 +42,7 @@ function generateAppSettingsDevelopment() {
       `;
 }
 function generatecsproj() {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
@@ -88,7 +82,7 @@ function generatecsproj() {
 `;
 }
 function generatecsprojuser() {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
