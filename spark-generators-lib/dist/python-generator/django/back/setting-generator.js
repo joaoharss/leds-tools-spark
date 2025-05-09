@@ -1,41 +1,47 @@
-import { isModule, isModuleImport } from "../../../shared/ast.js";
-import { createPath, base_ident, capitalizeString } from "../../../shared/generator-utils.js";
-import path from 'path';
-import fs from 'fs';
-import { expandToStringWithNL, toString } from "langium/generate";
-const ident = base_ident;
-export function generate(app, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const ast_js_1 = require("../../../shared/ast.js");
+const generator_utils_js_1 = require("../../../shared/generator-utils.js");
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const generate_1 = require("langium/generate");
+const ident = generator_utils_js_1.base_ident;
+function generate(app, target_folder) {
     const solution_name = app.configuration?.name?.toLowerCase() ?? "core";
-    const BASE_PATH = createPath(target_folder, "backend/");
-    fs.writeFileSync(path.join(BASE_PATH, ".env"), toString(createEnv(solution_name)));
-    fs.writeFileSync(path.join(BASE_PATH, "manage.py"), createManage(solution_name));
-    fs.writeFileSync(path.join(BASE_PATH, "requirements.txt"), toString(createRequirements(app.abstractElements.filter(isModuleImport))));
-    fs.writeFileSync(path.join(createPath(BASE_PATH, "logs"), ".gitkeep"), "");
-    fs.writeFileSync(path.join(createPath(BASE_PATH, "static"), "__init__.py"), "");
+    const BASE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "backend/");
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, ".env"), (0, generate_1.toString)(createEnv(solution_name)));
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, "manage.py"), createManage(solution_name));
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, "requirements.txt"), (0, generate_1.toString)(createRequirements(app.abstractElements.filter(ast_js_1.isModuleImport))));
+    fs_1.default.writeFileSync(path_1.default.join((0, generator_utils_js_1.createPath)(BASE_PATH, "logs"), ".gitkeep"), "");
+    fs_1.default.writeFileSync(path_1.default.join((0, generator_utils_js_1.createPath)(BASE_PATH, "static"), "__init__.py"), "");
     // Git Stuff
-    fs.writeFileSync(path.join(BASE_PATH, ".gitignore"), toString(generateGitignore()));
-    fs.writeFileSync(path.join(BASE_PATH, ".gitlab-ci.yml"), toString(generateCI()));
-    fs.writeFileSync(path.join(BASE_PATH, "sonar-project.properties"), toString(generateSonarProperties()));
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, ".gitignore"), (0, generate_1.toString)(generateGitignore()));
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, ".gitlab-ci.yml"), (0, generate_1.toString)(generateCI()));
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, "sonar-project.properties"), (0, generate_1.toString)(generateSonarProperties()));
     // Docker Stuff
-    fs.writeFileSync(path.join(BASE_PATH, ".dockerignore"), generateDockerignore());
-    fs.writeFileSync(path.join(BASE_PATH, "Dockerfile"), generateDockerfile(solution_name));
-    const CORE_PATH = createPath(BASE_PATH, solution_name);
-    fs.writeFileSync(path.join(CORE_PATH, "__init__.py"), "");
-    fs.writeFileSync(path.join(CORE_PATH, "asgi.py"), createASGI(solution_name));
-    fs.writeFileSync(path.join(CORE_PATH, "urls.py"), createURL(solution_name, app.configuration?.description ?? "", app));
-    fs.writeFileSync(path.join(CORE_PATH, "wsgi.py"), createWSGI(solution_name));
-    fs.writeFileSync(path.join(createPath(CORE_PATH, "media"), "__init__.py"), "");
-    fs.writeFileSync(path.join(createPath(CORE_PATH, "staticfiles"), "__init__.py"), "");
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, ".dockerignore"), generateDockerignore());
+    fs_1.default.writeFileSync(path_1.default.join(BASE_PATH, "Dockerfile"), generateDockerfile(solution_name));
+    const CORE_PATH = (0, generator_utils_js_1.createPath)(BASE_PATH, solution_name);
+    fs_1.default.writeFileSync(path_1.default.join(CORE_PATH, "__init__.py"), "");
+    fs_1.default.writeFileSync(path_1.default.join(CORE_PATH, "asgi.py"), createASGI(solution_name));
+    fs_1.default.writeFileSync(path_1.default.join(CORE_PATH, "urls.py"), createURL(solution_name, app.configuration?.description ?? "", app));
+    fs_1.default.writeFileSync(path_1.default.join(CORE_PATH, "wsgi.py"), createWSGI(solution_name));
+    fs_1.default.writeFileSync(path_1.default.join((0, generator_utils_js_1.createPath)(CORE_PATH, "media"), "__init__.py"), "");
+    fs_1.default.writeFileSync(path_1.default.join((0, generator_utils_js_1.createPath)(CORE_PATH, "staticfiles"), "__init__.py"), "");
     // Django Settings
-    const SETTING_PATH = createPath(CORE_PATH, "settings");
-    fs.writeFileSync(path.join(SETTING_PATH, "__init__.py"), "");
-    fs.writeFileSync(path.join(SETTING_PATH, "base.py"), createBaseSetting(app, solution_name));
-    fs.writeFileSync(path.join(SETTING_PATH, "test.py"), createTestSetting());
-    fs.writeFileSync(path.join(SETTING_PATH, "local.py"), createLocalSetting());
-    fs.writeFileSync(path.join(SETTING_PATH, "production.py"), createProductionSetting());
+    const SETTING_PATH = (0, generator_utils_js_1.createPath)(CORE_PATH, "settings");
+    fs_1.default.writeFileSync(path_1.default.join(SETTING_PATH, "__init__.py"), "");
+    fs_1.default.writeFileSync(path_1.default.join(SETTING_PATH, "base.py"), createBaseSetting(app, solution_name));
+    fs_1.default.writeFileSync(path_1.default.join(SETTING_PATH, "test.py"), createTestSetting());
+    fs_1.default.writeFileSync(path_1.default.join(SETTING_PATH, "local.py"), createLocalSetting());
+    fs_1.default.writeFileSync(path_1.default.join(SETTING_PATH, "production.py"), createProductionSetting());
 }
 function createEnv(softwareName) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         
         ALLOWED_HOSTS=*
         
@@ -81,7 +87,7 @@ function createEnv(softwareName) {
 }
 function createRequirements(imports) {
     // ${imports.map(i => `--extra-index-url ${i.link}`).join('\n')}
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         asgiref==3.6.0
         autopep8==1.5.7
         beautifulsoup4==4.11.1
@@ -307,9 +313,9 @@ function createBaseSetting(app, solution_name) {
         `${ident}'drf_yasg',`,
         `${ident}'behave_django',`,
         `# External Apps`,
-        ...app.abstractElements.filter(isModuleImport).map(m => `${ident}'${m.name}',`),
+        ...app.abstractElements.filter(ast_js_1.isModuleImport).map(m => `${ident}'${m.name}',`),
         `# Local Apps`,
-        ...app.abstractElements.filter(isModule).map(m => `${ident}'apps.${m.name.toLowerCase()}',`),
+        ...app.abstractElements.filter(ast_js_1.isModule).map(m => `${ident}'apps.${m.name.toLowerCase()}',`),
         `]`,
         ``,
         `MIDDLEWARE = [`,
@@ -484,7 +490,7 @@ function createURL(softwareName, description, app) {
         ``,
         `schema_view = get_schema_view(`,
         `${ident}openapi.Info(`,
-        `${ident}${ident}title="${capitalizeString(softwareName)}",`,
+        `${ident}${ident}title="${(0, generator_utils_js_1.capitalizeString)(softwareName)}",`,
         `${ident}${ident}default_version='v1',`,
         `${ident}${ident}description="${description}",`,
         `${ident}),`,
@@ -498,7 +504,7 @@ function createURL(softwareName, description, app) {
         `${ident}path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')), `,
         `${ident}path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),`,
         `${ident}path('accounts/', include('django.contrib.auth.urls')),`,
-        ...app.abstractElements.filter(isModule).map(m => `${ident}path('', include('apps.${m.name.toLowerCase()}.api_urls')),`),
+        ...app.abstractElements.filter(ast_js_1.isModule).map(m => `${ident}path('', include('apps.${m.name.toLowerCase()}.api_urls')),`),
         `${ident}*static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)`,
         `]`,
         ``,
@@ -553,7 +559,7 @@ function createASGI(softwareName) {
     return lines.join('\n');
 }
 function generateGitignore() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         # Byte-compiled / optimized / DLL files
         __pycache__/
         *.py[cod]
@@ -730,7 +736,7 @@ function generateGitignore() {
     `;
 }
 function generateCI() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         variables:
             PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
             SONAR_USER_HOME: "\${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
@@ -910,7 +916,7 @@ function generateCI() {
     `;
 }
 function generateSonarProperties() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         # Put your project key and organization here
         sonar.projectKey=
         sonar.organization=

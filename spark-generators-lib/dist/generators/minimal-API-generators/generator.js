@@ -1,19 +1,20 @@
-import fs from "fs";
-import { generate as generateHelpers } from "./helpers-generator.js";
-<<<<<<< HEAD
-import { generate as generateDocumentation } from "./documentation/generator.js";
-import { generate as generateWebservice } from "./webservice/generator.js";
-=======
-import { generate as generateDocumentation } from "../../csharp-generator/minimal-API-generator/documentation/generator.js";
-import { generate as generateWebservice } from "../../csharp-generator/minimal-API-generator/webservice/generator.js";
->>>>>>> 892cbef938aba9689a65f8114b388163385edf0e
-export function generate(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const fs_1 = __importDefault(require("fs"));
+const helpers_generator_js_1 = require("./helpers-generator.js");
+const generator_js_1 = require("../../csharp-generator/minimal-API-generator/documentation/generator.js");
+const generator_js_2 = require("../../csharp-generator/minimal-API-generator/webservice/generator.js");
+function generate(model, target_folder) {
     const target_folder_webservice = target_folder + "/webservice";
-    fs.mkdirSync(target_folder_webservice, { recursive: true });
+    fs_1.default.mkdirSync(target_folder_webservice, { recursive: true });
     // Helpers
-    generateHelpers(model, target_folder);
+    (0, helpers_generator_js_1.generate)(model, target_folder);
     // Documentation
-    generateDocumentation(model, target_folder);
+    (0, generator_js_1.generate)(model, target_folder);
     // WebServices
-    generateWebservice(model, target_folder_webservice);
+    (0, generator_js_2.generate)(model, target_folder_webservice);
 }

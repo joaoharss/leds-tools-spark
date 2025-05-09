@@ -1,23 +1,23 @@
-import path from "path";
-import fs from "fs";
-<<<<<<< HEAD
-import { isLocalEntity, isModule, } from "../../../../../language/generated/ast.js";
-import { expandToStringWithNL } from "langium/generate";
-import { capitalizeString } from "../../../../shared/generator-utils.js";
-=======
-import { isLocalEntity, isModule, } from "../../../shared/ast.js";
-import { expandToStringWithNL } from "langium/generate";
-import { capitalizeString } from "../../../shared/generator-utils.js";
->>>>>>> 892cbef938aba9689a65f8114b388163385edf0e
-export function generate(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const ast_js_1 = require("../../../shared/ast.js");
+const generate_1 = require("langium/generate");
+const generator_utils_js_1 = require("../../../shared/generator-utils.js");
+function generate(model, target_folder) {
     7;
     console.log(model.configuration?.feature);
-    fs.writeFileSync(path.join(target_folder, `Program.cs`), generateProgram(model, target_folder));
+    fs_1.default.writeFileSync(path_1.default.join(target_folder, `Program.cs`), generateProgram(model, target_folder));
 }
 function generateProgram(model, target_folder) {
-    const modules = model.abstractElements.filter(isModule);
+    const modules = model.abstractElements.filter(ast_js_1.isModule);
     const features = model.configuration?.feature;
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Shared;
@@ -31,7 +31,7 @@ function generateProgram(model, target_folder) {
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<ContextDb>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("${capitalizeString(model.configuration?.name || "model")}Connection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("${(0, generator_utils_js_1.capitalizeString)(model.configuration?.name || "model")}Connection")));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             ${generateFeatureBuilder(features)}
@@ -80,7 +80,7 @@ app.MapGroup("/identity").MapIdentityApi<IdentityUser>();`;
     }
     for (const mod of modules) {
         mapGroups += `var ${mod.name.toLowerCase()} = app.MapGroup("/${mod.name}"); \n \n`;
-        const mod_classes = mod.elements.filter(isLocalEntity);
+        const mod_classes = mod.elements.filter(ast_js_1.isLocalEntity);
         for (const classe of mod_classes) {
             mapGroups += `var ${classe.name.toLowerCase()} = ${mod.name.toLowerCase()}.MapGroup("/${classe.name}"); \n`;
             mapGroups += `${classe.name.toLowerCase()}.MapGet("/", async (ContextDb db) =>\n    await db.${classe.name}s.ToListAsync());\n`;
@@ -95,13 +95,13 @@ app.MapGroup("/identity").MapIdentityApi<IdentityUser>();`;
 function generateInputs(classe) {
     let inputs = "";
     for (const att of classe.attributes) {
-        inputs += `\n        ${classe.name.toLowerCase()}.${capitalizeString(att.name)} = input${classe.name}.${capitalizeString(att.name)};`;
+        inputs += `\n        ${classe.name.toLowerCase()}.${(0, generator_utils_js_1.capitalizeString)(att.name)} = input${classe.name}.${(0, generator_utils_js_1.capitalizeString)(att.name)};`;
     }
     return inputs;
 }
 function generateFeatureBuilder(features) {
     if (features == 'authentication') {
-        return expandToStringWithNL `
+        return (0, generate_1.expandToStringWithNL) `
         // Authentication Builder
         builder.Services.AddIdentityApiEndpoints<IdentityUser>()
             .AddEntityFrameworkStores<ContextDb>();
@@ -113,7 +113,7 @@ function generateFeatureBuilder(features) {
 }
 function generateFeatureCors(features) {
     if (features == 'authentication') {
-        return expandToStringWithNL `
+        return (0, generate_1.expandToStringWithNL) `
         app.UseCors();`;
     }
     return '';

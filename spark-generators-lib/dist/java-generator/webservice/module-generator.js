@@ -1,35 +1,41 @@
-import path from "path";
-import fs from "fs";
-import { isLocalEntity, isModule } from "../../shared/ast.js";
-import { capitalizeString, createPath } from "../../shared/generator-utils.js";
-import { expandToString, expandToStringWithNL, toString } from "langium/generate";
-export function generateModules(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateModules = generateModules;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const ast_js_1 = require("../../shared/ast.js");
+const generator_utils_js_1 = require("../../shared/generator-utils.js");
+const generate_1 = require("langium/generate");
+function generateModules(model, target_folder) {
     const package_path = model.configuration?.package_path ?? 'base';
-    const modules = model.abstractElements.filter(isModule);
+    const modules = model.abstractElements.filter(ast_js_1.isModule);
     if (model.configuration) {
         const package_name_application = `${package_path}.service.${model.configuration?.name?.toLocaleLowerCase()}.application`;
-        const APPLICATION_PATH = createPath(target_folder, "src/main/java/", package_name_application.replaceAll(".", "/"));
-        fs.writeFileSync(path.join(APPLICATION_PATH, `Application.java`), applicationGenerator(package_name_application, model.configuration));
+        const APPLICATION_PATH = (0, generator_utils_js_1.createPath)(target_folder, "src/main/java/", package_name_application.replaceAll(".", "/"));
+        fs_1.default.writeFileSync(path_1.default.join(APPLICATION_PATH, `Application.java`), applicationGenerator(package_name_application, model.configuration));
     }
     for (const mod of modules) {
         const package_name = `${package_path}.service.${model.configuration?.name?.toLocaleLowerCase()}.${mod.name.toLowerCase()}`;
-        const MODULE_PATH = createPath(target_folder, "src/main/java/", package_name.replaceAll(".", "/"));
-        const REPOSITORIES_PATH = createPath(MODULE_PATH, 'repositories');
-        const CONTROLLERS_PATH = createPath(MODULE_PATH, 'controllers');
-        const RECORDS_PATH = createPath(MODULE_PATH, 'records');
-        const mod_classes = mod.elements.filter(isLocalEntity);
+        const MODULE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "src/main/java/", package_name.replaceAll(".", "/"));
+        const REPOSITORIES_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, 'repositories');
+        const CONTROLLERS_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, 'controllers');
+        const RECORDS_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, 'records');
+        const mod_classes = mod.elements.filter(ast_js_1.isLocalEntity);
         for (const cls of mod_classes) {
             const class_name = cls.name;
             if (!cls.is_abstract) {
-                fs.writeFileSync(path.join(REPOSITORIES_PATH, `${class_name}RepositoryWeb.java`), toString(generateClassRepository(cls, package_name)));
-                fs.writeFileSync(path.join(CONTROLLERS_PATH, `${class_name}Controller.java`), toString(generateClassController(cls, package_name)));
-                fs.writeFileSync(path.join(RECORDS_PATH, `${class_name}Input.java`), toString(generateRecord(cls, package_name)));
+                fs_1.default.writeFileSync(path_1.default.join(REPOSITORIES_PATH, `${class_name}RepositoryWeb.java`), (0, generate_1.toString)(generateClassRepository(cls, package_name)));
+                fs_1.default.writeFileSync(path_1.default.join(CONTROLLERS_PATH, `${class_name}Controller.java`), (0, generate_1.toString)(generateClassController(cls, package_name)));
+                fs_1.default.writeFileSync(path_1.default.join(RECORDS_PATH, `${class_name}Input.java`), (0, generate_1.toString)(generateRecord(cls, package_name)));
             }
         }
     }
 }
 function applicationGenerator(path_package, configuration) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   package ${path_package};
 
   import org.springframework.boot.SpringApplication;
@@ -64,7 +70,7 @@ function applicationGenerator(path_package, configuration) {
   `;
 }
 function generateClassRepository(cls, package_name) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     package ${package_name}.repositories;
 
     import ${package_name.replace("service", "entity")}.models.${cls.name};
@@ -81,10 +87,10 @@ function generateClassRepository(cls, package_name) {
 }
 function generateRecord(cls, package_name) {
     var att = cls.attributes;
-    if (isLocalEntity(cls.superType?.ref)) {
+    if ((0, ast_js_1.isLocalEntity)(cls.superType?.ref)) {
         att = cls.attributes.concat(cls.superType?.ref?.attributes ?? []);
     }
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   package ${package_name}.records;
   import java.time.LocalDate;
   public record ${cls.name}Input( ${att.map(att => generateRecordAtribute(att)).join(',')} ) {
@@ -92,8 +98,8 @@ function generateRecord(cls, package_name) {
   `;
 }
 function generateRecordAtribute(attribute) {
-    return expandToString `
-${capitalizeString(toString(generateTypeAttribute(attribute))) ?? 'Not Type'} ${attribute.name} 
+    return (0, generate_1.expandToString) `
+${(0, generator_utils_js_1.capitalizeString)((0, generate_1.toString)(generateTypeAttribute(attribute))) ?? 'Not Type'} ${attribute.name} 
 `;
 }
 function generateTypeAttribute(attribute) {
@@ -104,10 +110,10 @@ function generateTypeAttribute(attribute) {
 }
 function generateClassController(cls, package_name) {
     var att = cls.attributes;
-    if (isLocalEntity(cls.superType?.ref)) {
+    if ((0, ast_js_1.isLocalEntity)(cls.superType?.ref)) {
         att = cls.attributes.concat(cls.superType?.ref?.attributes ?? []);
     }
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     package ${package_name}.controllers;
 
     import ${package_name.replace("service", "entity")}.models.${cls.name};
@@ -157,7 +163,7 @@ function generateClassController(cls, package_name) {
         if(instance == null) {
             throw new RuntimeException("${cls.name} not found");
         }
-        ${att.map(att => `instance.set${capitalizeString(att.name)}(input.${att.name}());`).join("\n")}
+        ${att.map(att => `instance.set${(0, generator_utils_js_1.capitalizeString)(att.name)}(input.${att.name}());`).join("\n")}
         repository.save(instance);
         return instance;
       }
