@@ -1,20 +1,14 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const generate_1 = require("langium/generate");
-function generate(model, target_folder) {
+import fs from "fs";
+import path from "path";
+import { expandToStringWithNL } from "langium/generate";
+export function generate(model, target_folder) {
     generateDockerCompose(model, target_folder);
-    fs_1.default.writeFileSync(path_1.default.join(`${target_folder}/${model.configuration?.name}/`, 'Dockerfile'), generateDockerfile(model));
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, '.dockerignore'), generateDockerIgnore());
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'launchSettings.json'), generateLaunchSettings(model));
+    fs.writeFileSync(path.join(`${target_folder}/${model.configuration?.name}/`, 'Dockerfile'), generateDockerfile(model));
+    fs.writeFileSync(path.join(target_folder, '.dockerignore'), generateDockerIgnore());
+    fs.writeFileSync(path.join(target_folder, 'launchSettings.json'), generateLaunchSettings(model));
 }
 function generateDockerfile(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 
   FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
   USER app
@@ -41,12 +35,12 @@ function generateDockerfile(model) {
   ENTRYPOINT ["dotnet", "${model.configuration?.name}.dll"]`;
 }
 function generateDockerCompose(model, target_folder) {
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'docker-compose.dcproj'), generatedockercomposedcproj(model));
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'docker-compose.yml'), generatedockercomposeyml(model));
-    fs_1.default.writeFileSync(path_1.default.join(target_folder, 'docker-compose.override.yml'), generateDockerComposeOverride(model));
+    fs.writeFileSync(path.join(target_folder, 'docker-compose.dcproj'), generatedockercomposedcproj(model));
+    fs.writeFileSync(path.join(target_folder, 'docker-compose.yml'), generatedockercomposeyml(model));
+    fs.writeFileSync(path.join(target_folder, 'docker-compose.override.yml'), generateDockerComposeOverride(model));
 }
 function generatedockercomposedcproj(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
   <PropertyGroup Label="Globals">
@@ -68,7 +62,7 @@ function generatedockercomposedcproj(model) {
 </Project>`;
 }
 function generateDockerIgnore() {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 **/.classpath
 **/.dockerignore
 **/.env
@@ -101,7 +95,7 @@ README.md
 !.git/refs/heads/**`;
 }
 function generatedockercomposeyml(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 networks:
   backend:
 services:
@@ -128,7 +122,7 @@ services:
       - sqlserver`;
 }
 function generateLaunchSettings(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 {
   "profiles": {
     "Docker Compose": {
@@ -142,7 +136,7 @@ function generateLaunchSettings(model) {
 }`;
 }
 function generateDockerComposeOverride(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
 version: '3.4'
 
 services:

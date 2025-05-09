@@ -1,14 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateModel = generateModel;
-const generate_1 = require("langium/generate");
-const ast_js_1 = require("../../shared/ast.js");
-const generator_utils_js_1 = require("../../shared/generator-utils.js");
-function generateModel(cls, is_supertype, relations, package_name, importedEntities) {
+import { CompositeGeneratorNode, expandToString, expandToStringWithNL, toString } from "langium/generate";
+import { isLocalEntity } from "../../shared/ast.js";
+import { capitalizeString } from "../../shared/generator-utils.js";
+export function generateModel(cls, is_supertype, relations, package_name, importedEntities) {
     const supertype = cls.superType?.ref;
     const is_abstract = cls?.is_abstract;
     const external_relations = relations.filter(relation => relation.tgt.$container != cls.$container);
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
     package ${package_name}.models;
 
     import lombok.Data;
@@ -77,7 +74,7 @@ function generateModel(cls, is_supertype, relations, package_name, importedEntit
           return "${cls.name} {" +
              "id="+this.id+
               ${cls.attributes.map(a => `", ${a.name}='"+this.${a.name}+"'"+`).join('\n')}
-              ${(0, ast_js_1.isLocalEntity)(supertype) ? supertype?.attributes.map(a => `", ${a.name}='"+this.${a.name}+"'"+`).join('\n') : undefined}
+              ${isLocalEntity(supertype) ? supertype?.attributes.map(a => `", ${a.name}='"+this.${a.name}+"'"+`).join('\n') : undefined}
               ${cls.enumentityatributes.map(a => `", ${a.name.toLowerCase()}='"+this.${a.name.toLowerCase()}+"'"+`).join('\n')}
           '}';
       }  
@@ -85,22 +82,22 @@ function generateModel(cls, is_supertype, relations, package_name, importedEntit
   `;
 }
 function generateImportSuperEntity(package_name, entity, supertype, importedEntities) {
-    if ((0, ast_js_1.isLocalEntity)(supertype)) {
+    if (isLocalEntity(supertype)) {
         return `import ${package_name.replace(entity.$container.name.toLowerCase(), generateImportEntity(supertype, importedEntities))}.models.${supertype.name};`;
     }
     return `import br.nemo.immigrant.ontology.entity.${generateImportEntity(supertype, importedEntities)}.models.${supertype.name};`;
 }
 function generateImportEntity(entity, importedEntities) {
-    if ((0, ast_js_1.isLocalEntity)(entity)) {
+    if (isLocalEntity(entity)) {
         return `${entity.$container.name.toLowerCase()}`;
     }
     const moduleImport = importedEntities.get(entity);
     return `${moduleImport?.library.toLocaleLowerCase()}.${entity.$container.name.toLowerCase()}`;
 }
 function generateAttribute(attribute, is_abstract) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
   ${generateUniqueCollumn(attribute)}
-  ${is_abstract ? `protected` : `private`} ${(0, generator_utils_js_1.capitalizeString)((0, generate_1.toString)(generateTypeAttribute(attribute)) ?? 'NOTYPE')} ${attribute.name};
+  ${is_abstract ? `protected` : `private`} ${capitalizeString(toString(generateTypeAttribute(attribute)) ?? 'NOTYPE')} ${attribute.name};
   `;
 }
 function generateUniqueCollumn(attribute) {
@@ -116,7 +113,7 @@ function generateTypeAttribute(attribute) {
     return attribute.type;
 }
 function generateRelations(cls, relations) {
-    const node = new generate_1.CompositeGeneratorNode();
+    const node = new CompositeGeneratorNode();
     for (const rel of relations) {
         node.append(generateRelation(cls, rel));
         node.appendNewLine();
@@ -127,14 +124,14 @@ function generateRelation(cls, { tgt, card, owner }) {
     switch (card) {
         case "OneToOne":
             if (owner) {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @OneToOne
         @JoinColumn(name = "${tgt.name.toLowerCase()}_id", referencedColumnName = "id")
         private ${tgt.name} ${tgt.name.toLowerCase()};
       `;
             }
             else {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "${cls.name.toLowerCase()}")
         @Builder.Default
         private ${tgt.name} ${tgt.name.toLowerCase()} = null;
@@ -145,7 +142,7 @@ function generateRelation(cls, { tgt, card, owner }) {
                 return '';
             }
             else {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true, mappedBy = "${cls.name.toLowerCase()}")
         @Builder.Default
         Set<${tgt.name}> ${tgt.name.toLowerCase()}s = new HashSet<>();
@@ -153,7 +150,7 @@ function generateRelation(cls, { tgt, card, owner }) {
             }
         case "ManyToOne":
             if (owner) {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @ManyToOne
         @JoinColumn(name = "${tgt.name.toLowerCase()}_id")
         private ${tgt.name} ${tgt.name.toLowerCase()};
@@ -164,7 +161,7 @@ function generateRelation(cls, { tgt, card, owner }) {
             }
         case "ManyToMany":
             if (owner) {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @ManyToMany
         @JoinTable(
             name = "${cls.name.toLowerCase()}_${tgt.name.toLowerCase()}",
@@ -176,7 +173,7 @@ function generateRelation(cls, { tgt, card, owner }) {
       `;
             }
             else {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
         @ManyToMany(mappedBy = "${cls.name.toLowerCase()}s")
         @Builder.Default
         private Set<${tgt.name}> ${tgt.name.toLowerCase()}s = new HashSet<>();
@@ -185,14 +182,14 @@ function generateRelation(cls, { tgt, card, owner }) {
     }
 }
 function createEnum(enumEntityAtribute) {
-    return (0, generate_1.expandToString) `
+    return expandToString `
   @Builder.Default
   @Enumerated(EnumType.STRING)
   private ${enumEntityAtribute.type.ref?.name} ${enumEntityAtribute.name.toLowerCase()} = ${enumEntityAtribute.type.ref?.name}.${enumEntityAtribute.type.ref?.attributes[0].name.toUpperCase()};
   `;
 }
 function generateEnum(cls) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
   ${cls.enumentityatributes.map(enumEntityAtribute => createEnum(enumEntityAtribute)).join("\n")}
   `;
 }

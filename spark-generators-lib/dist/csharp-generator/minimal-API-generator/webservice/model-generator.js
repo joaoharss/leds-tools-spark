@@ -1,16 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateModel = generateModel;
-exports.generateIdentityUser = generateIdentityUser;
-const generate_1 = require("langium/generate");
-const ast_js_1 = require("../../../shared/ast.js");
-const generator_utils_js_1 = require("../../../shared/generator-utils.js");
-function generateModel(cls, is_supertype, relations, package_name, importedEntities, identity) {
+import { CompositeGeneratorNode, expandToString, expandToStringWithNL, toString } from "langium/generate";
+import { isLocalEntity } from "../../../shared/ast.js";
+import { capitalizeString } from "../../../shared/generator-utils.js";
+export function generateModel(cls, is_supertype, relations, package_name, importedEntities, identity) {
     const supertype = cls.superType?.ref;
     const is_abstract = cls?.is_abstract;
     const external_relations = relations.filter(relation => relation.tgt.$container != cls.$container);
     if (identity) {
-        return (0, generate_1.expandToStringWithNL) `
+        return expandToStringWithNL `
     namespace ${package_name}
     {
       using Microsoft.EntityFrameworkCore;
@@ -31,7 +27,7 @@ function generateModel(cls, is_supertype, relations, package_name, importedEntit
   `;
     }
     else {
-        return (0, generate_1.expandToStringWithNL) `
+        return expandToStringWithNL `
     namespace ${package_name}
     {
       using Microsoft.EntityFrameworkCore;
@@ -57,8 +53,8 @@ function generateModel(cls, is_supertype, relations, package_name, importedEntit
   `;
     }
 }
-function generateIdentityUser(cls, package_name) {
-    return (0, generate_1.expandToStringWithNL) `
+export function generateIdentityUser(cls, package_name) {
+    return expandToStringWithNL `
   using Microsoft.AspNetCore.Identity;
 
   namespace ${package_name}
@@ -72,22 +68,22 @@ function generateIdentityUser(cls, package_name) {
   `;
 }
 function generateImportSuperEntity(package_name, entity, supertype, importedEntities) {
-    if ((0, ast_js_1.isLocalEntity)(supertype)) {
+    if (isLocalEntity(supertype)) {
         return ``;
     }
     return `using ${generateImportEntity(supertype, importedEntities)};`;
 }
 function generateImportEntity(entity, importedEntities) {
-    if ((0, ast_js_1.isLocalEntity)(entity)) {
+    if (isLocalEntity(entity)) {
         return `${entity.$container.name.toLowerCase()}`;
     }
     const moduleImport = importedEntities.get(entity);
     return `${moduleImport?.library.toLocaleLowerCase()}.${entity.$container.name.toLowerCase()}`;
 }
 function generateAttribute(attribute, is_abstract) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
   ${generateUniqueCollumn(attribute)}
-  ${is_abstract ? `protected` : `public`} ${(0, generate_1.toString)(generateTypeAttribute(attribute) ?? 'NOTYPE')} ${(0, generator_utils_js_1.capitalizeString)(attribute.name)} { get; set; }
+  ${is_abstract ? `protected` : `public`} ${toString(generateTypeAttribute(attribute) ?? 'NOTYPE')} ${capitalizeString(attribute.name)} { get; set; }
   `;
 }
 function generateUniqueCollumn(attribute) {
@@ -124,7 +120,7 @@ function generateTypeAttribute(attribute) {
     return attribute.type;
 }
 function generateRelations(cls, relations) {
-    const node = new generate_1.CompositeGeneratorNode();
+    const node = new CompositeGeneratorNode();
     for (const rel of relations) {
         node.append(generateRelation(cls, rel));
         node.appendNewLine();
@@ -138,39 +134,39 @@ function generateRelation(cls, { tgt, card, owner }) {
     switch (card) {
         case "OneToOne":
             if (owner) {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
           // Navigation property and foreign key for ${tgt.name}
           public Guid ${tgt.name}Id { get; set; }
           public virtual ${tgt.name} ${tgt.name} { get; set; }`;
             }
             else {
-                return (0, generate_1.expandToStringWithNL) `
+                return expandToStringWithNL `
           // Navigation property and foreign key for ${cls.name}
           public Guid? ${cls.name}Id { get; set; }
           public virtual ${cls.name}? ${cls.name} { get; set; }`;
             }
         case "OneToMany":
-            return (0, generate_1.expandToStringWithNL) `
+            return expandToStringWithNL `
           // Reference to ${tgt.name} (one-to-many side)
           public virtual ICollection<${tgt.name}> ${pluralName} { get; set; } = new HashSet<${tgt.name}>();`;
         case "ManyToOne":
-            return (0, generate_1.expandToStringWithNL) `
+            return expandToStringWithNL `
         // Collection of ${tgt.name} (many-to-one side)
         public Guid ${tgt.name}Id { get; set; }
         public virtual ${tgt.name} ${tgt.name} { get; set; } = null!;`;
         case "ManyToMany":
-            return (0, generate_1.expandToStringWithNL) `
+            return expandToStringWithNL `
         // Collection of ${tgt.name} (many-to-many side)
         public virtual ICollection<${tgt.name}> ${pluralName} { get; set; } = new HashSet<${tgt.name}>();`;
     }
 }
 function createEnum(enumEntityAtribute) {
-    return (0, generate_1.expandToString) `
+    return expandToString `
   public ${enumEntityAtribute.type.ref?.name} ${enumEntityAtribute.type.ref?.name.toLowerCase()} { get; set; }
   `;
 }
 function generateEnum(cls) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
   ${cls.enumentityatributes.map(enumEntityAtribute => createEnum(enumEntityAtribute)).join("\n")}
   `;
 }

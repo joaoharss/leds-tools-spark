@@ -1,28 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
-const ast_js_1 = require("../../../../shared/ast.js");
-const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
-const generate_1 = require("langium/generate");
-function generate(app, target_folder) {
-    const BASE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "backend");
-    const FEATURES_PATH = (0, generator_utils_js_1.createPath)(BASE_PATH, "features");
-    const STEPS_PATH = (0, generator_utils_js_1.createPath)(FEATURES_PATH, "steps");
-    fs_1.default.writeFileSync(path_1.default.join(STEPS_PATH, "README.md"), "");
-    for (const m of app.abstractElements.filter(ast_js_1.isModule)) {
-        for (const e of m.elements.filter(ast_js_1.isLocalEntity).filter(e => !e.is_abstract)) {
-            fs_1.default.writeFileSync(path_1.default.join(FEATURES_PATH, `${m.name}_${e.name}.feature`), (0, generate_1.toString)(generate_feature_file(e)));
+import path from 'path';
+import fs from 'fs';
+import { isLocalEntity, isModule } from '../../../../shared/ast.js';
+import { createPath } from '../../../../shared/generator-utils.js';
+import { expandToStringWithNL, toString } from 'langium/generate';
+export function generate(app, target_folder) {
+    const BASE_PATH = createPath(target_folder, "backend");
+    const FEATURES_PATH = createPath(BASE_PATH, "features");
+    const STEPS_PATH = createPath(FEATURES_PATH, "steps");
+    fs.writeFileSync(path.join(STEPS_PATH, "README.md"), "");
+    for (const m of app.abstractElements.filter(isModule)) {
+        for (const e of m.elements.filter(isLocalEntity).filter(e => !e.is_abstract)) {
+            fs.writeFileSync(path.join(FEATURES_PATH, `${m.name}_${e.name}.feature`), toString(generate_feature_file(e)));
             // fs.writeFileSync(path.join(STEPS_PATH, `${m.name}_${e.name}_steps.py`), generateSteps(e))
         }
     }
 }
 function generate_feature_file(e) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
         Feature: Gerenciar ${e.name}
 
         Scenario Outline: Eu, como Usuário Autenticado, quero cadastrar um(a) ${e.name}

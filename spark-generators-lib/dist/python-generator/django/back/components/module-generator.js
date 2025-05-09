@@ -1,21 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateModules = generateModules;
-const admin_generator_js_1 = require("./admin-generator.js");
-const model_generator_js_1 = require("./model-generator.js");
-const url_generator_js_1 = require("./url-generator.js");
-const view_generator_js_1 = require("./view-generator.js");
-const serialize_generator_js_1 = require("./serialize-generator.js");
-const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
-const ast_js_1 = require("../../../../shared/ast.js");
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
-const generate_1 = require("langium/generate");
-const ident = generator_utils_js_1.base_ident;
-function generateModules(app, target_folder) {
+import { generateAdmin } from './admin-generator.js';
+import { generateModels } from './model-generator.js';
+import { generateURLAPI } from './url-generator.js';
+import { generateAPIView } from './view-generator.js';
+import { generateSerializer } from './serialize-generator.js';
+import { base_ident, capitalizeString, createPath } from '../../../../shared/generator-utils.js';
+import { isLocalEntity, isModule } from '../../../../shared/ast.js';
+import path from 'path';
+import fs from 'fs';
+import { expandToStringWithNL } from 'langium/generate';
+const ident = base_ident;
+export function generateModules(app, target_folder) {
     // Processa quais Entidades representam algum ator
     const entity_to_actor = new Map();
     // app.abstractElements.filter(isActor).forEach(a => {
@@ -23,25 +17,25 @@ function generateModules(app, target_folder) {
     //         entity_to_actor.set(a.entity.ref, a)
     //     }
     // })
-    const APPS_PATH = (0, generator_utils_js_1.createPath)(target_folder, "backend", "apps/");
+    const APPS_PATH = createPath(target_folder, "backend", "apps/");
     // Criando os models, service e applications
-    for (const m of app.abstractElements.filter(ast_js_1.isModule)) {
-        const MODULE_PATH = (0, generator_utils_js_1.createPath)(APPS_PATH, m.name.toLowerCase());
-        fs_1.default.writeFileSync(path_1.default.join((0, generator_utils_js_1.createPath)(MODULE_PATH, "migrations/"), "__init__.py"), "");
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/__init__.py"), create_init(m));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/models.py"), (0, model_generator_js_1.generateModels)(m));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/admin.py"), (0, admin_generator_js_1.generateAdmin)(m));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/utils.py"), generateUtil());
+    for (const m of app.abstractElements.filter(isModule)) {
+        const MODULE_PATH = createPath(APPS_PATH, m.name.toLowerCase());
+        fs.writeFileSync(path.join(createPath(MODULE_PATH, "migrations/"), "__init__.py"), "");
+        fs.writeFileSync(path.join(MODULE_PATH, "/__init__.py"), create_init(m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/models.py"), generateModels(m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/admin.py"), generateAdmin(m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/utils.py"), generateUtil());
         // fs.writeFileSync(APPS_PATH + m.name.toLowerCase + "/factory.py", m.createFactory)
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/apps.py"), createApps(m));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/api_urls.py"), (0, url_generator_js_1.generateURLAPI)(m));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/api_views.py"), (0, view_generator_js_1.generateAPIView)(m, new Set(entity_to_actor.keys())));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/pagination.py"), pagination());
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/signals.py"), generateSignals(m, entity_to_actor));
-        fs_1.default.writeFileSync(path_1.default.join(MODULE_PATH, "/serializers.py"), (0, serialize_generator_js_1.generateSerializer)(m));
-        const TEST_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, "/test/unit/");
-        for (const e of m.elements.filter(ast_js_1.isLocalEntity)) {
-            fs_1.default.writeFileSync(path_1.default.join(TEST_PATH, e.name.toLowerCase() + "_tests.py"), createclasstest(e, m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/apps.py"), createApps(m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/api_urls.py"), generateURLAPI(m));
+        fs.writeFileSync(path.join(MODULE_PATH, "/api_views.py"), generateAPIView(m, new Set(entity_to_actor.keys())));
+        fs.writeFileSync(path.join(MODULE_PATH, "/pagination.py"), pagination());
+        fs.writeFileSync(path.join(MODULE_PATH, "/signals.py"), generateSignals(m, entity_to_actor));
+        fs.writeFileSync(path.join(MODULE_PATH, "/serializers.py"), generateSerializer(m));
+        const TEST_PATH = createPath(MODULE_PATH, "/test/unit/");
+        for (const e of m.elements.filter(isLocalEntity)) {
+            fs.writeFileSync(path.join(TEST_PATH, e.name.toLowerCase() + "_tests.py"), createclasstest(e, m));
         }
     }
 }
@@ -97,14 +91,14 @@ function pagination() {
     return lines.join('\n');
 }
 function create_init(m) {
-    return `default_app_config = 'apps.${m.name.toLowerCase()}.apps.${(0, generator_utils_js_1.capitalizeString)(m.name)}Config'\n`;
+    return `default_app_config = 'apps.${m.name.toLowerCase()}.apps.${capitalizeString(m.name)}Config'\n`;
 }
 function createApps(m) {
     const lines = [
         `from django.apps import AppConfig`,
         // `from django.utils.translation import gettext_lazy as _`,
         ``,
-        `class ${(0, generator_utils_js_1.capitalizeString)(m.name)}Config(AppConfig):`,
+        `class ${capitalizeString(m.name)}Config(AppConfig):`,
         `${ident}name  = 'apps.${m.name.toLowerCase()}'`,
         `${ident}label = 'apps_${m.name.toLowerCase()}'`,
         ``,
@@ -240,7 +234,7 @@ function createclasstest(e, m) {
     return lines.join('\n');
 }
 function generateSignals(m, map) {
-    const non_abstract_entities = m.elements.filter(ast_js_1.isLocalEntity).filter(e => !e.is_abstract);
+    const non_abstract_entities = m.elements.filter(isLocalEntity).filter(e => !e.is_abstract);
     const lines = [
         `from .models import ${non_abstract_entities.map(e => e.name).join(', ')}`,
         `from django.db.models.signals import (`,
@@ -265,13 +259,13 @@ function generateSignals(m, map) {
 }
 function entitySignals(e, map) {
     const post_save = map.has(e) ?
-        (0, generate_1.expandToStringWithNL) `
+        expandToStringWithNL `
             if created:
                 group = Group.objects.get(name="${map.get(e)?.id}")
                 instance.user_application.groups.add(group)
         ` :
         'pass';
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
         @receiver(pre_init, sender=${e.name})
         def pre_init_${e.name.toLowerCase()}(sender, *args, **kwargs):
         ${ident}pass

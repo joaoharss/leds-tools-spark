@@ -1,21 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const generate_1 = require("langium/generate");
-function generate(model, target_folder) {
-    fs_1.default.mkdirSync(target_folder, { recursive: true });
+import fs from "fs";
+import path from "path";
+import { expandToStringWithNL } from "langium/generate";
+export function generate(model, target_folder) {
+    fs.mkdirSync(target_folder, { recursive: true });
     if (model.configuration) {
-        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'README.md'), createProjectReadme(model.configuration));
-        fs_1.default.writeFileSync(path_1.default.join(target_folder, '.gitlab-ci.yml'), createGitLab(model));
+        fs.writeFileSync(path.join(target_folder, 'README.md'), createProjectReadme(model.configuration));
+        fs.writeFileSync(path.join(target_folder, '.gitlab-ci.yml'), createGitLab(model));
     }
 }
 function createGitLab(model) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
     docker-build:
     image: docker:cli
     stage: build
@@ -35,13 +29,13 @@ function createGitLab(model) {
   `;
 }
 function stackREADME() {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
     1. Minimal API
     2. Swagger API
     `;
 }
 function createProjectReadme(configuration) {
-    return (0, generate_1.expandToStringWithNL) `
+    return expandToStringWithNL `
     # ${configuration.name}
     ## 🚀 Goal
     ${configuration.description}
