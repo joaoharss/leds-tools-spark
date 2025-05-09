@@ -1,21 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateModules = generateModules;
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
-const ast_js_1 = require("../../../shared/ast.js");
-const generator_utils_js_1 = require("../../../shared/generator-utils.js");
-const relations_js_1 = require("../../../shared/relations.js");
-const generate_1 = require("langium/generate");
-const model_generator_js_1 = require("./model-generator.js");
-const enum_generator_js_1 = require("./enum-generator.js");
-function generateModules(model, target_folder) {
-    const modules = model.abstractElements.filter(ast_js_1.isModule);
-    const all_entities = modules.map(module => module.elements.filter(ast_js_1.isLocalEntity)).flat();
-    const relation_maps = (0, relations_js_1.processRelations)(all_entities);
+import path from "path";
+import fs from "fs";
+import { isEnumX, isLocalEntity, isModule, isModuleImport } from "../../../shared/ast.js";
+import { capitalizeString, createPath } from "../../../shared/generator-utils.js";
+import { processRelations } from "../../../shared/relations.js";
+import { CompositeGeneratorNode, expandToStringWithNL, toString } from "langium/generate";
+import { generateIdentityUser, generateModel } from "./model-generator.js";
+import { generateEnum } from "./enum-generator.js";
+export function generateModules(model, target_folder) {
+    const modules = model.abstractElements.filter(isModule);
+    const all_entities = modules.map(module => module.elements.filter(isLocalEntity)).flat();
+    const relation_maps = processRelations(all_entities);
     const imported_entities = processImportedEntities(model);
     const features = model.configuration?.feature;
     const clsauth = model.configuration?.entity;

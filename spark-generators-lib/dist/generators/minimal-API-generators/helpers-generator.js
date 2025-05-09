@@ -1,15 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const generator_js_1 = require("../../csharp-generator/minimal-API-generator/properties/generator.js");
-const generate_1 = require("langium/generate");
-const generator_utils_js_1 = require("../../shared/generator-utils.js");
-function generate(model, target_folder) {
+import fs from "fs";
+import path from "path";
+import { generate as generateProperties } from "../../csharp-generator/minimal-API-generator/properties/generator.js";
+import { expandToStringWithNL } from "langium/generate";
+import { capitalizeString } from "../../shared/generator-utils.js";
+export function generate(model, target_folder) {
     const target_folder_properties = target_folder + "/Properties";
     fs_1.default.mkdirSync(target_folder_properties, { recursive: true });
     (0, generator_js_1.generate)(model, target_folder_properties);

@@ -1,15 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generate = generate;
-const path_1 = __importDefault(require("path"));
-const fs_1 = __importDefault(require("fs"));
-const ast_js_1 = require("../../../shared/ast.js");
-const generate_1 = require("langium/generate");
-const generator_utils_js_1 = require("../../../shared/generator-utils.js");
-function generate(model, target_folder) {
+import path from "path";
+import fs from "fs";
+import { isLocalEntity, isModule, } from "../../../shared/ast.js";
+import { expandToStringWithNL } from "langium/generate";
+import { capitalizeString } from "../../../shared/generator-utils.js";
+export function generate(model, target_folder) {
     7;
     console.log(model.configuration?.feature);
     fs_1.default.writeFileSync(path_1.default.join(target_folder, `Program.cs`), generateProgram(model, target_folder));
