@@ -1,14 +1,20 @@
-import path from 'path';
-import fs from 'fs';
-import { expandToStringWithNL } from 'langium/generate';
-export function generate(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const generate_1 = require("langium/generate");
+function generate(model, target_folder) {
     if (model.configuration) {
-        fs.writeFileSync(path.join(target_folder, 'Properties.json'), createPropertiesJSON());
-        fs.writeFileSync(path.join(target_folder, 'launchSettings.json'), createLaunchSettingsJSON());
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'Properties.json'), createPropertiesJSON());
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'launchSettings.json'), createLaunchSettingsJSON());
     }
 }
 function createPropertiesJSON() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     {
         "profiles": {
           "http": {
@@ -61,7 +67,7 @@ function createPropertiesJSON() {
     `;
 }
 function createLaunchSettingsJSON() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   {
     "profiles": {
       "testeminimalapi": {

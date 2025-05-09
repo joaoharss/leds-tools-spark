@@ -1,11 +1,14 @@
-import { isLocalEntity } from "../../../../shared/ast.js";
-import { base_ident } from "../../../../shared/generator-utils.js";
-const ident = base_ident;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateURLAPI = generateURLAPI;
+const ast_js_1 = require("../../../../shared/ast.js");
+const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
+const ident = generator_utils_js_1.base_ident;
 function generateURLAPIAux(e) {
     return `router.register(r'${e.name.toLowerCase()}', ${e.name}ViewSet, basename='${e.name.toLowerCase()}')`;
 }
-export function generateURLAPI(m) {
-    const entities = m.elements.filter(isLocalEntity).filter(e => !e.is_abstract);
+function generateURLAPI(m) {
+    const entities = m.elements.filter(ast_js_1.isLocalEntity).filter(e => !e.is_abstract);
     const lines = [
         `from django.urls import path, register_converter, include`,
         `from rest_framework import routers`,

@@ -1,11 +1,17 @@
-import { expandToStringWithNL } from "langium/generate";
-import fs from "fs";
-import path from "path";
-export function generate(model, target_folder) {
-    fs.writeFileSync(path.join(target_folder, model.configuration?.name + ".sln"), generateProjectsln(model));
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const generate_1 = require("langium/generate");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+function generate(model, target_folder) {
+    fs_1.default.writeFileSync(path_1.default.join(target_folder, model.configuration?.name + ".sln"), generateProjectsln(model));
 }
 function generateProjectsln(model) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17

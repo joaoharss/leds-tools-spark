@@ -1,21 +1,27 @@
-import path from 'path';
-import fs from 'fs';
-import { createPath } from '../../shared/generator-utils.js';
-import { expandToStringWithNL, toString } from 'langium/generate';
-import { isModuleImport } from '../../shared/ast.js';
-export function generateConfigs(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateConfigs = generateConfigs;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const generator_utils_js_1 = require("../../shared/generator-utils.js");
+const generate_1 = require("langium/generate");
+const ast_js_1 = require("../../shared/ast.js");
+function generateConfigs(model, target_folder) {
     if (model.configuration) {
-        fs.writeFileSync(path.join(target_folder, 'Dockerfile'), toString(generateDockerFile()));
-        fs.writeFileSync(path.join(target_folder, 'docker-compose-database.yml'), toString(generateComposeDatabase(model.configuration)));
-        fs.writeFileSync(path.join(target_folder, 'docker-compose.yml'), toString(generateCompose(model.configuration)));
-        const RESOURCE_PATH = createPath(target_folder, "src/main/resources");
-        fs.writeFileSync(path.join(target_folder, 'pom.xml'), toString(generatePOMXML(model)));
-        fs.writeFileSync(path.join(RESOURCE_PATH, 'logback.xml'), toString(generatelogback()));
-        fs.writeFileSync(path.join(RESOURCE_PATH, 'application.properties'), toString(applicationProperties(model.configuration)));
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'Dockerfile'), (0, generate_1.toString)(generateDockerFile()));
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'docker-compose-database.yml'), (0, generate_1.toString)(generateComposeDatabase(model.configuration)));
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'docker-compose.yml'), (0, generate_1.toString)(generateCompose(model.configuration)));
+        const RESOURCE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "src/main/resources");
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'pom.xml'), (0, generate_1.toString)(generatePOMXML(model)));
+        fs_1.default.writeFileSync(path_1.default.join(RESOURCE_PATH, 'logback.xml'), (0, generate_1.toString)(generatelogback()));
+        fs_1.default.writeFileSync(path_1.default.join(RESOURCE_PATH, 'application.properties'), (0, generate_1.toString)(applicationProperties(model.configuration)));
     }
 }
 function generateDockerFile() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   # Use an official Maven image as the base image
   FROM maven:3.8.4-openjdk-17-slim
 
@@ -41,7 +47,7 @@ function generateDockerFile() {
   `;
 }
 function applicationProperties(configuration) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   spring.datasource.initialization-mode=always
   spring.datasource.url =  jdbc:postgresql://localhost:5432/${configuration.database_name}
   spring.datasource.username = postgres
@@ -67,7 +73,7 @@ function applicationProperties(configuration) {
   `;
 }
 function generatelogback() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   <?xml version="1.0" encoding="UTF-8"?>
   <configuration>
       <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -85,7 +91,7 @@ function generatelogback() {
 }
 function generatePOMXML(application) {
     const name = application.configuration?.name?.toLocaleLowerCase();
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -122,7 +128,7 @@ function generatePOMXML(application) {
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
 
-    ${application.abstractElements.filter(isModuleImport).map(moduleImport => generateOntologyDependency(moduleImport)).join("\n")}
+    ${application.abstractElements.filter(ast_js_1.isModuleImport).map(moduleImport => generateOntologyDependency(moduleImport)).join("\n")}
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -195,7 +201,7 @@ function generatePOMXML(application) {
   `;
 }
 function generateOntologyDependency(moduleImported) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   <dependency>
   <groupId>${moduleImported.package_path.toLowerCase()}</groupId>
   <artifactId>${moduleImported.library.toLowerCase()}</artifactId>
@@ -205,7 +211,7 @@ function generateOntologyDependency(moduleImported) {
 }
 function generateCompose(configuration) {
     const name = configuration.name?.toLocaleLowerCase();
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   version: '3.9'
   services:
     ontology_service:
@@ -224,7 +230,7 @@ function generateCompose(configuration) {
 function generateComposeDatabase(configuration) {
     const projectName = configuration.name?.toLocaleLowerCase();
     const databaseName = configuration.database_name?.toLocaleLowerCase();
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     version: '3.7'
 
     services:

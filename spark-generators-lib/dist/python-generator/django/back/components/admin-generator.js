@@ -1,8 +1,11 @@
-import { isLocalEntity } from "../../../../shared/ast.js";
-import { ident_size } from "../../../../shared/generator-utils.js";
-const ident = ident_size;
-export function generateAdmin(m) {
-    const non_abstract_entities = m.elements.filter(isLocalEntity).filter(e => !e.is_abstract);
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateAdmin = generateAdmin;
+const ast_js_1 = require("../../../../shared/ast.js");
+const generator_utils_js_1 = require("../../../../shared/generator-utils.js");
+const ident = generator_utils_js_1.ident_size;
+function generateAdmin(m) {
+    const non_abstract_entities = m.elements.filter(ast_js_1.isLocalEntity).filter(e => !e.is_abstract);
     if (non_abstract_entities.length === 0) {
         return '';
     }

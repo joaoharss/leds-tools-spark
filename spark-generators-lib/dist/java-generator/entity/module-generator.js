@@ -1,41 +1,47 @@
-import path from "path";
-import fs from "fs";
-import { isEnumX, isLocalEntity, isModule, isModuleImport } from "../../shared/ast.js";
-import { createPath } from "../../shared/generator-utils.js";
-import { processRelations } from "../../shared/relations.js";
-import { expandToStringWithNL, toString } from "langium/generate";
-import { generateModel } from "./model-generator.js";
-import { generateEnum } from "./enum-generator.js";
-export function generateModules(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateModules = generateModules;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const ast_js_1 = require("../../shared/ast.js");
+const generator_utils_js_1 = require("../../shared/generator-utils.js");
+const relations_js_1 = require("../../shared/relations.js");
+const generate_1 = require("langium/generate");
+const model_generator_js_1 = require("./model-generator.js");
+const enum_generator_js_1 = require("./enum-generator.js");
+function generateModules(model, target_folder) {
     const package_path = model.configuration?.package_path ?? 'base';
-    const modules = model.abstractElements.filter(isModule);
-    const all_entities = modules.map(module => module.elements.filter(isLocalEntity)).flat();
-    const relation_maps = processRelations(all_entities);
+    const modules = model.abstractElements.filter(ast_js_1.isModule);
+    const all_entities = modules.map(module => module.elements.filter(ast_js_1.isLocalEntity)).flat();
+    const relation_maps = (0, relations_js_1.processRelations)(all_entities);
     const imported_entities = processImportedEntities(model);
     for (const mod of modules) {
         const package_name = `${package_path}.entity.${model.configuration?.name}.${mod.name.toLowerCase()}`;
-        const MODULE_PATH = createPath(target_folder, "src/main/java/", package_name.replaceAll(".", "/"));
-        const REPOSITORIES_PATH = createPath(MODULE_PATH, 'repositories');
-        const MODELS_PATH = createPath(MODULE_PATH, 'models');
+        const MODULE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "src/main/java/", package_name.replaceAll(".", "/"));
+        const REPOSITORIES_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, 'repositories');
+        const MODELS_PATH = (0, generator_utils_js_1.createPath)(MODULE_PATH, 'models');
         const supertype_classes = processSupertypes(mod);
-        const mod_classes = mod.elements.filter(isLocalEntity);
+        const mod_classes = mod.elements.filter(ast_js_1.isLocalEntity);
         for (const cls of mod_classes) {
             const class_name = cls.name;
             const { attributes, relations } = getAttrsAndRelations(cls, relation_maps);
             attributes;
-            fs.writeFileSync(path.join(MODELS_PATH, `${class_name}.java`), toString(generateModel(cls, supertype_classes.has(cls), relations, package_name, imported_entities)));
+            fs_1.default.writeFileSync(path_1.default.join(MODELS_PATH, `${class_name}.java`), (0, generate_1.toString)((0, model_generator_js_1.generateModel)(cls, supertype_classes.has(cls), relations, package_name, imported_entities)));
             if (!cls.is_abstract) {
-                fs.writeFileSync(path.join(REPOSITORIES_PATH, `${class_name}Repository.java`), toString(generateClassRepository(cls, package_name, imported_entities)));
+                fs_1.default.writeFileSync(path_1.default.join(REPOSITORIES_PATH, `${class_name}Repository.java`), (0, generate_1.toString)(generateClassRepository(cls, package_name, imported_entities)));
             }
         }
-        for (const enumx of mod.elements.filter(isEnumX)) {
-            fs.writeFileSync(path.join(MODELS_PATH, `${enumx.name}.java`), generateEnum(enumx, package_name));
+        for (const enumx of mod.elements.filter(ast_js_1.isEnumX)) {
+            fs_1.default.writeFileSync(path_1.default.join(MODELS_PATH, `${enumx.name}.java`), (0, enum_generator_js_1.generateEnum)(enumx, package_name));
         }
     }
 }
 function processImportedEntities(application) {
     const map = new Map();
-    for (const moduleImport of application.abstractElements.filter(isModuleImport)) {
+    for (const moduleImport of application.abstractElements.filter(ast_js_1.isModuleImport)) {
         moduleImport.entities.map(importedEntity => map.set(importedEntity, moduleImport));
     }
     return map;
@@ -45,8 +51,8 @@ function processImportedEntities(application) {
  */
 function processSupertypes(mod) {
     const set = new Set();
-    for (const cls of mod.elements.filter(isLocalEntity)) {
-        if (cls.superType?.ref != null && isLocalEntity(cls.superType?.ref)) {
+    for (const cls of mod.elements.filter(ast_js_1.isLocalEntity)) {
+        if (cls.superType?.ref != null && (0, ast_js_1.isLocalEntity)(cls.superType?.ref)) {
             set.add(cls.superType?.ref);
         }
     }
@@ -57,7 +63,7 @@ function processSupertypes(mod) {
  */
 function getAttrsAndRelations(cls, relation_map) {
     // Se tem superclasse, puxa os atributos e relações da superclasse
-    if (cls.superType?.ref != null && isLocalEntity(cls.superType?.ref)) {
+    if (cls.superType?.ref != null && (0, ast_js_1.isLocalEntity)(cls.superType?.ref)) {
         const parent = cls.superType?.ref;
         const { attributes, relations } = getAttrsAndRelations(parent, relation_map);
         return {
@@ -73,7 +79,7 @@ function getAttrsAndRelations(cls, relation_map) {
     }
 }
 function generateClassRepository(cls, package_name, importedEntities) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     package ${package_name}.repositories;
 
     import ${package_name}.models.${cls.name};

@@ -1,15 +1,21 @@
-import fs from "fs";
-import path from 'path';
-import { expandToStringWithNL } from "langium/generate";
-export function generate(model, target_folder) {
-    fs.mkdirSync(target_folder, { recursive: true });
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generate = generate;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const generate_1 = require("langium/generate");
+function generate(model, target_folder) {
+    fs_1.default.mkdirSync(target_folder, { recursive: true });
     if (model.configuration) {
-        fs.writeFileSync(path.join(target_folder, 'README.md'), createProjectReadme(model.configuration));
-        fs.writeFileSync(path.join(target_folder, '.gitlab-ci.yml'), createGitlab());
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'README.md'), createProjectReadme(model.configuration));
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, '.gitlab-ci.yml'), createGitlab());
     }
 }
 function createGitlab() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     variables:
     CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
@@ -66,7 +72,7 @@ function createGitlab() {
     `;
 }
 function stackREADME() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
         1. Spring Boot 3.0
         2. Spring Data Rest
         3. Spring GraphQL
@@ -74,7 +80,7 @@ function stackREADME() {
     `;
 }
 function createProjectReadme(configuration) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     # ${configuration.name}
     ## 🚀 Goal
     ${configuration.description}
