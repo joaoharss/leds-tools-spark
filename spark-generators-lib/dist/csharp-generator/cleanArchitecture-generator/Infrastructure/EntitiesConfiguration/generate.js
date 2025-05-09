@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { isLocalEntity, isModule } from "../../../../../../language/generated/ast.js";
-import { processRelations } from "../../../../../util/relations.js";
+import { isLocalEntity, isModule } from "../../../../shared/ast.js";
+import { processRelations } from "../../../../shared/relations.js";
 import { CompositeGeneratorNode, expandToStringWithNL } from "langium/generate";
 export function generate(model, target_folder) {
     const modules = model.abstractElements.filter(isModule);

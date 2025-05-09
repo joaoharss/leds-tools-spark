@@ -1,7 +1,7 @@
 import { expandToString } from "langium/generate";
 import fs from "fs";
 import path from "path";
-import { capitalizeString } from "../../../../../../../util/generator-utils.js";
+import { capitalizeString } from "../../../../../../shared/generator-utils.js";
 export function generate(model, target_folder, cls, relations) {
     fs.writeFileSync(path.join(target_folder, `Update${cls.name}Handler.cs`), generateHandler(model, cls));
     fs.writeFileSync(path.join(target_folder, `Update${cls.name}Command.cs`), generateCommand(model, cls, relations));

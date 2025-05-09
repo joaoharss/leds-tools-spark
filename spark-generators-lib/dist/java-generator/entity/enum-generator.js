@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateEnum = generateEnum;
-const generate_1 = require("langium/generate");
-function generateEnum(enumx, package_name) {
-    return (0, generate_1.expandToString) `
+import { expandToString } from "langium/generate";
+export function generateEnum(enumx, package_name) {
+    return expandToString `
     package ${package_name}.models;
     
     public enum ${enumx.name} {

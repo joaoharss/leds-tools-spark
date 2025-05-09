@@ -2,7 +2,7 @@ import { expandToStringWithNL } from "langium/generate";
 import { isLocalEntity, isModule } from "../../../../shared/ast.js";
 import fs from "fs";
 import path from "path";
-import { processRelations } from "../../../../../util/relations.js";
+import { processRelations } from "../../../../shared/relations.js";
 export function generate(model, target_folder) {
     const modules = model.abstractElements.filter(isModule);
     const all_entities = modules.map(module => module.elements.filter(isLocalEntity)).flat();

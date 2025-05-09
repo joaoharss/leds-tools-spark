@@ -1,8 +1,8 @@
 import { expandToString } from "langium/generate";
-import { isLocalEntity, isModule } from "../../../../../../language/generated/ast.js";
+import { isLocalEntity, isModule } from "../../../../shared/ast.js";
 import fs from "fs";
 import path from "path";
-import { processRelations } from "../../../../../util/relations.js";
+import { processRelations } from "../../../../shared/relations.js";
 import { generate as generateCreate } from "./Case/CreateCase/generate.js";
 import { generate as generateDelete } from "./Case/DeleteCase/generate.js";
 import { generate as generateUpdate } from "./Case/UpdateCase/generate.js";

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processRelations = processRelations;
-const ast_js_1 = require("./ast.js");
+import { isLocalEntity } from "./ast.js";
 function revert_card(card) {
     switch (card) {
         case 'OneToOne':
@@ -19,7 +16,7 @@ function revert_card(card) {
  * retornando um mapa que mapeia um Class para a lista
  * de {alvo, cardinalidade e ownership} de suas relações
  */
-function processRelations(localEntities) {
+export function processRelations(localEntities) {
     // Inicializa o mapa com listas vazias
     const map = new Map();
     for (const cls of localEntities) {
@@ -39,7 +36,7 @@ function processRelations(localEntities) {
     };
     for (const entity of localEntities) {
         for (const relationship of entity.relations) {
-            if ((0, ast_js_1.isLocalEntity)(relationship.type.ref)) {
+            if (isLocalEntity(relationship.type.ref)) {
                 if (relationship.$type === "OneToMany") {
                     add_relation(relationship.type.ref, entity, "ManyToOne");
                 }

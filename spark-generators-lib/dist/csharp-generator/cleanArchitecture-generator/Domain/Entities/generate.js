@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { isLocalEntity, isModule, isModuleImport } from "../../../../../../language/generated/ast.js";
-import { processRelations } from "../../../../../util/relations.js";
+import { isLocalEntity, isModule, isModuleImport } from "../../../../shared/ast.js";
+import { processRelations } from "../../../../shared/relations.js";
 import { toString } from "langium/generate";
 import { generateModel } from "./model-generator.js";
 export function generate(model, target_folder) {

@@ -1,10 +1,10 @@
 import fs from "fs";
-import { generate as generateInfra } from "./Infrastructure/generate.js";
-import { generate as generateTest } from "./DomainTest/generate.js";
-import { generate as generateWeb } from "./WebAPI/generate.js";
-import { generate as generateDomain } from "./Domain/generate.js";
-import { generate as generateApplication } from "./Application/generate.js";
-import { generate as generateInfraTest } from "./InfraTest/generate.js";
+import { generate as generateInfra } from "../../csharp-generator/cleanArchitecture-generator/generator.js";
+import { generate as generateTest } from "../../csharp-generator/cleanArchitecture-generator/DomainTest/generate.js";
+import { generate as generateWeb } from "../../csharp-generator/cleanArchitecture-generator/WebAPI/generate.js";
+import { generate as generateDomain } from "../../csharp-generator/cleanArchitecture-generator/Domain/generate.js";
+import { generate as generateApplication } from "../../csharp-generator/cleanArchitecture-generator/Application/generate.js";
+import { generate as generateInfraTest } from "../../csharp-generator/cleanArchitecture-generator/InfraTest/generate.js";
 export function generate(model, target_folder) {
     const application_folder = target_folder + `/${model.configuration?.name}.Application`;
     const domain_folder = target_folder + `/${model.configuration?.name}.Domain`;
