@@ -1,10 +1,10 @@
-import { Model } from "../../../language/generated/ast.js"
+import { Model as LibModel } from "spark-generators-lib"
 import fs from "fs";
 
 import {generate as djangoGenerate} from "spark-generators-lib"
 import { createPath } from "../../util/generator-utils.js";
 
-export function generate(model: Model, target_folder: string) : void {
+export function generate(model: LibModel, target_folder: string) : void {
 
     const target_folder_back = createPath(target_folder, "backend")
 
