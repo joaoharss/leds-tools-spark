@@ -9,7 +9,6 @@
     "dist"
   ],
   "scripts": {
-    
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "vitest run",
@@ -25,7 +24,7 @@
     "typescript": "^5.8.3",
     "vitest": "^2.1.8"
   },
-  "version": "1.0.11",
+  "version": "1.0.12",
   "keywords": [],
   "author": "",
   "license": "ISC"
