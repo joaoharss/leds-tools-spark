@@ -1,19 +1,25 @@
-import path from 'path';
-import fs from 'fs';
-import { isModuleImport } from '../../shared/ast.js';
-import { createPath } from '../../shared/generator-utils.js';
-import { expandToStringWithNL, toString } from 'langium/generate';
-export function generateConfigs(model, target_folder) {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateConfigs = generateConfigs;
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
+const ast_js_1 = require("../../shared/ast.js");
+const generator_utils_js_1 = require("../../shared/generator-utils.js");
+const generate_1 = require("langium/generate");
+function generateConfigs(model, target_folder) {
     if (model.configuration) {
-        const RESOURCE_PATH = createPath(target_folder, "src/main/resources");
-        fs.writeFileSync(path.join(target_folder, 'settings.xml'), toString(generateSettings()));
-        fs.writeFileSync(path.join(target_folder, 'pom.xml'), toString(generatePOMXML(model)));
-        fs.writeFileSync(path.join(RESOURCE_PATH, 'logback.xml'), toString(generatelogback()));
-        fs.writeFileSync(path.join(RESOURCE_PATH, 'application.properties'), toString(applicationProperties(model.configuration)));
+        const RESOURCE_PATH = (0, generator_utils_js_1.createPath)(target_folder, "src/main/resources");
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'settings.xml'), (0, generate_1.toString)(generateSettings()));
+        fs_1.default.writeFileSync(path_1.default.join(target_folder, 'pom.xml'), (0, generate_1.toString)(generatePOMXML(model)));
+        fs_1.default.writeFileSync(path_1.default.join(RESOURCE_PATH, 'logback.xml'), (0, generate_1.toString)(generatelogback()));
+        fs_1.default.writeFileSync(path_1.default.join(RESOURCE_PATH, 'application.properties'), (0, generate_1.toString)(applicationProperties(model.configuration)));
     }
 }
 function generateSettings() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
     <settings>
     <servers>
       <server>
@@ -31,7 +37,7 @@ function generateSettings() {
   </settings>`;
 }
 function applicationProperties(configuration) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   spring.datasource.initialization-mode=always
   spring.datasource.url =  jdbc:postgresql://localhost:5432/${configuration.database_name?.toLocaleLowerCase()}
   spring.datasource.username = postgres
@@ -48,7 +54,7 @@ function applicationProperties(configuration) {
   `;
 }
 function generatelogback() {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   <?xml version="1.0" encoding="UTF-8"?>
   <configuration>
       <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -65,7 +71,7 @@ function generatelogback() {
   `;
 }
 function generatePOMXML(application) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -108,7 +114,7 @@ function generatePOMXML(application) {
 
 	<dependencies>
 		
-    ${application.abstractElements.filter(isModuleImport).map(moduleImport => generateOntologyDependency(moduleImport)).join("\n")}
+    ${application.abstractElements.filter(ast_js_1.isModuleImport).map(moduleImport => generateOntologyDependency(moduleImport)).join("\n")}
   
 
     <dependency>
@@ -139,7 +145,7 @@ function generatePOMXML(application) {
   `;
 }
 function generateOntologyDependency(moduleImported) {
-    return expandToStringWithNL `
+    return (0, generate_1.expandToStringWithNL) `
   <dependency>
   <groupId>${moduleImported.package_path?.toLowerCase()}</groupId>
   <artifactId>${moduleImported.library?.toLowerCase()}</artifactId>

@@ -1,2 +1,2 @@
-import { Model } from '../../../../../language/generated/ast.js';
+import { Model } from '../../../shared/ast.js';
 export declare function generate(model: Model, target_folder: string): void;
