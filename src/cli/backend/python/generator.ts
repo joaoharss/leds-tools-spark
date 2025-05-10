@@ -1,10 +1,10 @@
-import { Model as LibModel } from "spark-generators-lib"
+
 import fs from "fs";
 
-import {generate as djangoGenerate} from "spark-generators-lib"
+import { generators, Model as LibModel} from "spark-generators-lib"
 import { createPath } from "../../util/generator-utils.js";
 
-export function generate(model: LibModel, target_folder: string) : void {
+export function generate(model: LibModel.Model, target_folder: string) : void {
 
     const target_folder_back = createPath(target_folder, "backend")
 
@@ -12,7 +12,10 @@ export function generate(model: LibModel, target_folder: string) : void {
     fs.mkdirSync(target_folder_back, {recursive:true})
 
 
-    djangoGenerate(model,target_folder_back)
+    generators.django.generate(model,target_folder_back)
 
 
 }
+
+
+
