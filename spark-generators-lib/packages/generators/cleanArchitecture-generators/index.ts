@@ -1,1 +1,1 @@
-export *  as generator  from '../cleanArchitecture-generators/index.js';
+export { generate as generator } from '../cleanArchitecture-generators/generator.js';
