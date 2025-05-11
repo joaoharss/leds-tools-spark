@@ -17,10 +17,5 @@
     "outDir": "dist",
     "rootDir": "packages",
     "baseUrl": "./",
-    "paths": {
-      "spark-generators-lib/springboot": [
-        "node_modules/spark-generators-lib/dist/java-generator/index.js"
-      ]
-    }
   }
 }
