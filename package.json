@@ -11,7 +11,7 @@
     "publisher": "ledsifes",
     "repository": {
         "type": "git",
-        "url": "https://gitlab.com/ledsifes/tools/r2d2"
+        "url": "git+https://gitlab.com/ledsifes/tools/r2d2.git"
     },
     "type": "module",
     "scripts": {
@@ -41,9 +41,11 @@
         "monaco-editor-workers": "~0.44.0",
         "monaco-editor-wrapper": "~3.5.0",
         "monaco-languageclient": "~7.2.0",
+        "spark-generators-lib": "^1.0.13",
         "sprotty": "^1.3.0",
         "sprotty-vscode": "^1.0.0",
         "sprotty-vscode-webview": "^1.0.0",
+        "tsup": "^8.4.0",
         "vscode-languageclient": "~9.0.1",
         "vscode-languageserver": "~9.0.1"
     },
@@ -185,7 +187,7 @@
     ],
     "main": "./out/extension/main.cjs",
     "bin": {
-        "s-p-a-r-k-cli": "./bin/cli.js"
+        "s-p-a-r-k-cli": "bin/cli.js"
     },
     "overrides": {
         "monaco-editor": "$monaco-editor",
