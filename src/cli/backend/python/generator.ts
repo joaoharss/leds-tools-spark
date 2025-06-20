@@ -1,7 +1,9 @@
 import fs from "fs";
 
-import { generators, Model as LibModel } from "spark-generators-lib";
+import { backend } from "leds-spark-lib"
 
+export import LibModel = backend.Model;
+export const generators = backend.csharp.generators;
 
 export function generate(model: LibModel.Model, target_folder: string): void {
     
