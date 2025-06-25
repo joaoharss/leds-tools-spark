@@ -47,7 +47,7 @@ jobs:
       - name: Publish to VSCode Marketplace
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            vsce publish --pat ${{ secrets.VSCODE_TOKEN }}
+            vsce publish --pre-release --pat ${{ secrets.VSCODE_TOKEN }}
           elif [[ "${{ github.ref }}" == "refs/heads/developing" ]]; then
             vsce publish --pre-release --pat ${{ secrets.VSCODE_TOKEN }}
           else

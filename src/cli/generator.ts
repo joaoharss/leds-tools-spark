@@ -1,5 +1,5 @@
 import type { Model } from '../language/generated/ast.js';
-import {Model as LibModel} from 'spark-generators-lib';
+import { backend } from 'leds-spark-lib';
 import { GenerateOptions } from './main.js';
 import { generate as pythonGenerate } from './backend/python/generator.js';
 import { generate as javaGenerate } from './backend/java/generator.js';
@@ -11,21 +11,23 @@ import { generate as opaGenerate } from './opa/generator.js'
 import path from 'path';
 import chalk from 'chalk';
 
+export import LibModel = backend.Model;
+
 export function generate(model: Model, filePath: string, destination: string | undefined, opts: GenerateOptions): string {
     const final_destination = extractDestination(filePath, destination);
 
     if (opts.only_back) {
         // Backend generation
         if (model.configuration?.language === 'python') {
-            pythonGenerate(model, final_destination);
+            pythonGenerate(model as unknown as LibModel.Model, final_destination);
         } else if (model.configuration?.language?.startsWith("csharp")) {
-            csharpGenerator(model, final_destination);
+            csharpGenerator(model as unknown as LibModel.Model, final_destination);
         } else if (model.configuration?.language === "java") {
             javaGenerate(model as unknown as LibModel.Model, final_destination);
         }
     } else if (opts.only_front) {
         // Frontend generation
-        vueVitegenerate(model, final_destination);
+        vueVitegenerate(model as unknown as LibModel.Model, final_destination);
     } else if (opts.only_Documentation) {
         // Documentation generation
         docGenerate(model, final_destination);
@@ -38,15 +40,15 @@ export function generate(model: Model, filePath: string, destination: string | u
     } else {
         // Generate All
         if (model.configuration?.language === 'python') {
-            pythonGenerate(model, final_destination);
+            pythonGenerate(model as unknown as LibModel.Model, final_destination);
         } else if (model.configuration?.language?.startsWith("csharp")) {
-            csharpGenerator(model, final_destination);
+            csharpGenerator(model as unknown as LibModel.Model, final_destination);
         } else if (model.configuration?.language === 'java') {
             javaGenerate(model as unknown as LibModel.Model, final_destination);
         }
 
         docGenerate(model, final_destination);
-        vueVitegenerate(model, final_destination);
+        vueVitegenerate(model as unknown as LibModel.Model, final_destination);
         opaGenerate(model, final_destination);
     }
 
