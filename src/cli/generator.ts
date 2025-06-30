@@ -1,7 +1,5 @@
 import type { Model } from '../language/generated/ast.js';
-
 import { backend } from 'leds-spark-lib';
-
 import { GenerateOptions } from './main.js';
 import { generate as pythonGenerate } from './backend/python/generator.js';
 import { generate as javaGenerate } from './backend/java/generator.js';
