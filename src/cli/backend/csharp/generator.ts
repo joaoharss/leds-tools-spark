@@ -14,13 +14,10 @@ export function generate(model: Model.Model, target_folder: string): void {
 
   if (model.configuration?.language === "csharp-minimal-api") {
     generators.miniminal.generate(model, target_folder_projname);
-
   } 
   else {
     generators.CleanArc.generate(model, target_folder_projname);
     
   }
 
-
 }
-
