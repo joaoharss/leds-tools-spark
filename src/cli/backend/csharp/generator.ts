@@ -4,7 +4,7 @@ import path from "path";
 import { backend } from "leds-spark-lib"
 
 export import Model = backend.Model;
-export const generators = backend.csharp.generators;
+export const generator = backend.generators;
 
 export function generate(model: Model.Model, target_folder: string): void {
   const target_folder_back = path.join(target_folder, "backend");
@@ -13,10 +13,14 @@ export function generate(model: Model.Model, target_folder: string): void {
   fs.mkdirSync(target_folder_back, { recursive: true });
 
   if (model.configuration?.language === "csharp-minimal-api") {
-    generators.miniminal.generate(model, target_folder_projname);
+    generator.miniminal.generator(model, target_folder_projname);
+    generator.miniminal.generateDocker(model, target_folder_back);
+    generator.miniminal.generateProject(model, target_folder_back);
   } 
   else {
-    generators.CleanArc.generate(model, target_folder_projname);
+    generator.CleanArc.generator(model, target_folder_projname);
+    generator.CleanArc.generateDocker(model, target_folder_back);
+    generator.CleanArc.generateProject(model, target_folder_back);
     
   }
 
