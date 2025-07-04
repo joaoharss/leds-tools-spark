@@ -16,7 +16,6 @@ export function generate(model: Model.Model, target_folder: string): void {
     generator.miniminal.generator(model, target_folder_projname);
     generator.miniminal.generateDocker(model, target_folder_back);
     generator.miniminal.generateProject(model, target_folder_back);
-
   } 
   else {
     generator.CleanArc.generator(model, target_folder_projname);
@@ -25,6 +24,4 @@ export function generate(model: Model.Model, target_folder: string): void {
     
   }
 
-
 }
-
